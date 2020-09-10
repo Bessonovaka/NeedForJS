@@ -3,6 +3,9 @@
 const score = document.querySelector('.score'),
     start = document.querySelector('.start'),
     pause = document.querySelector('.pause'),
+    pauseText = document.querySelector('.pause__text'),
+    music = document.querySelector('.music'),
+    musicText = document.querySelector('.music__text'),
     gameArea = document.querySelector('.gameArea'),
     localStorage = document.querySelector('.local-storage'),
     car = document.createElement('div');
@@ -68,10 +71,21 @@ function pauseGame() {
     if (setting.start) {
         setting.start = false;
         audio.pause();
+        pauseText.textContent = 'Старт';
     } else {
         setting.start = true;
         requestAnimationFrame(playGame);
         audio.play();
+        pauseText.textContent = 'Пауза';
+    }
+}
+function pauseMusic() {
+    if (audio.paused) {
+        audio.play();
+        musicText.textContent = 'Выключить музыку';
+    } else {
+        audio.pause();
+        musicText.textContent = 'Включить музыку';
     }
 }
 function playGame() {
@@ -164,3 +178,4 @@ start.addEventListener('click', startGame); // современнее on.click, 
 document.addEventListener('keydown', startRun);
 document.addEventListener('keyup', stopRun);
 pause.addEventListener('click', pauseGame);
+music.addEventListener('click', pauseMusic);
