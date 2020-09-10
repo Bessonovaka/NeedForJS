@@ -2,11 +2,12 @@
 
 const score = document.querySelector('.score'),
     start = document.querySelector('.start'),
+    pause = document.querySelector('.pause'),
     gameArea = document.querySelector('.gameArea'),
     localStorage = document.querySelector('.local-storage'),
     car = document.createElement('div');
 
-const audio = document.createElement('embed');
+const audio = document.createElement('audio');
 
 const keys = {
     ArrowUp: false,
@@ -31,6 +32,7 @@ function getQuantityElements(heightElement) {
 function startGame() {
     start.classList.add('hide');
     gameArea.innerHTML = '';
+    setting.speed = 3;
 
     for (let i = 0; i < getQuantityElements(100); i++) {
         const line = document.createElement('div');
@@ -57,9 +59,20 @@ function startGame() {
     car.style.left = gameArea.offsetWidth / 2 - car.offsetWidth / 2;
     car.style.top = 'auto';
     document.body.append(audio);
+    audio.play();
     setting.x = car.offsetLeft; // css left
     setting.y = car.offsetTop;
     requestAnimationFrame(playGame);
+}
+function pauseGame() {
+    if (setting.start) {
+        setting.start = false;
+        audio.pause();
+    } else {
+        setting.start = true;
+        requestAnimationFrame(playGame);
+        audio.play();
+    }
 }
 function playGame() {
     if (setting.start) {
@@ -150,3 +163,4 @@ audio.style.cssText = `position: absolute; top: -1000px;`;
 start.addEventListener('click', startGame); // современнее on.click, можно обрабатывать сразу несколько событий, даже однотипных
 document.addEventListener('keydown', startRun);
 document.addEventListener('keyup', stopRun);
+pause.addEventListener('click', pauseGame);
