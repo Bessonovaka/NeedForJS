@@ -2,10 +2,11 @@
 
 const score = document.querySelector('.score'),
     start = document.querySelector('.start'),
-    gameArea = document.querySelector('.gameArea');
+    gameArea = document.querySelector('.gameArea'),
+    localStorage = document.querySelector('.local-storage'),
     car = document.createElement('div');
 
-//const audio = document.createElement('embed');
+const audio = document.createElement('embed');
 
 const keys = {
     ArrowUp: false,
@@ -18,12 +19,9 @@ const setting = {
     start: false,
     score: 0,
     speed: 3,
-    traffic: 3
+    traffic: 3,
+    localStorage: 0
 };
-
-const cars = {
-
-}
 
 // Функции
 
@@ -48,7 +46,7 @@ function startGame() {
         enemy.y = -100 * setting.traffic * (i + 1);
         enemy.style.left = Math.floor(Math.random() * (gameArea.offsetWidth - 50)) + 'px';
         enemy.style.top = enemy.y + 'px';
-        enemy.style.background = `transparent url(image/enemy.png) center / cover no-repeat`;
+        enemy.style.background = `transparent url(image/enemy${getRandomInt(3)}.png) center / cover no-repeat`;
         gameArea.append(enemy);
     }
 
@@ -58,14 +56,15 @@ function startGame() {
     car.style.bottom = '10px';
     car.style.left = gameArea.offsetWidth / 2 - car.offsetWidth / 2;
     car.style.top = 'auto';
-    //document.body.append(audio);
+    document.body.append(audio);
     setting.x = car.offsetLeft; // css left
     setting.y = car.offsetTop;
     requestAnimationFrame(playGame);
 }
 function playGame() {
     if (setting.start) {
-        setting.score += setting.speed;
+        setting.score++; // счет растет
+        setting.speed += 0.0005; // скорость растет
         score.textContent = 'SCORE: ' + setting.score;
         moveRoad();
         moveEnemy();
@@ -93,7 +92,6 @@ function startRun(event) {
     keys[event.key] = true;
 }
 function stopRun(event) {
-    console.log('stop');
     keys[event.key] = false;
 }
 function moveRoad() {
@@ -119,9 +117,15 @@ function moveEnemy() {
             carRect.left <= enemyRect.right && 
             carRect.bottom >= enemyRect.top) {
                 setting.start = false;
-                console.log('ДТП');
+                audio.remove();
                 start.classList.remove('hide');
-                start.style.top = score.offsetHeight;
+                if (setting.score > setting.localStorage) {
+                    setting.localStorage = setting.score;
+                }
+                localStorage.textContent = 'Лучший счёт: ' + setting.localStorage;
+                start.style.top = localStorage.offsetHeight + score.offsetHeight;
+                score.style.top = localStorage.offsetHeight;
+                
         }
 
         item.y += setting.speed / 2;
@@ -132,16 +136,16 @@ function moveEnemy() {
         }
     });
 }
+function getRandomInt(max) {
+    return Math.floor(Math.random() * Math.floor(max));
+} // возвращает рандомные целые числа от 1 до max (нужна для enemy)
 
 // Обработчики событий
 
 car.classList.add('car');
 
-/*audio.src = 'audio.mp3';
-audio.type = 'audio/mp3';
-audio.style.cssText = `position: absolute; top: -1000px;`;*/
-
-// audio.remove(); остановить музыку
+audio.src = 'audio.mp3';
+audio.style.cssText = `position: absolute; top: -1000px;`;
 
 start.addEventListener('click', startGame); // современнее on.click, можно обрабатывать сразу несколько событий, даже однотипных
 document.addEventListener('keydown', startRun);
